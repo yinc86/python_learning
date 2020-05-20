@@ -1,0 +1,67 @@
+import random
+
+def write_file(name, total_round, total_times, least_times):
+    record = '%s %d %d %d \n' % (name, total_round, total_times, least_times)
+    f = open('game_one_user.txt', 'w')
+    f.write(record)
+    f.close()
+
+f = open('game_one_user.txt', 'r')
+user_result = f.read()
+f.close()
+rec_list = user_result.split(' ')
+rec_dict = { rec_list[0] : rec_list[1:]}
+
+name = rec_list[0]
+total_round = int(rec_dict[rec_list[0]][0])             #游戏总次数
+total_times = int(rec_dict[rec_list[0]][1])            #猜数字总轮数
+least_times = int(rec_dict[rec_list[0]][2])           #单次最少轮数
+if total_round == 0 :
+    avg_times = 0                       #平均轮数
+else:
+    avg_times = float(total_times / total_round)
+
+print (
+        '%s，你已经玩了%d次，最少%d轮猜出答案，平均%.2f轮猜出答案，开始游戏！'
+        %(
+          name,
+          total_round,
+          least_times,
+          avg_times
+        )
+       )
+
+choice = 'y'
+while choice == 'y':
+    A = random.randint(1, 100)
+    print (A)
+    # 单轮猜数字大小
+    total_round += 1
+    result = False
+    times = 0
+    while not result:
+        B = int(input('请猜一个 1 - 100 的数字：'))
+        times += 1
+        if B > A:
+            print('猜大了，再试试！')
+        elif B < A:
+            print('猜小了，再试试！')
+        else:
+            print('猜对了，你一共猜了 %d 次' % times)
+            result = True #跳出猜数字单轮循环
+    #设置猜测总次数，判断第一次直接为第一轮猜测次数，其他轮为相加
+    total_times += times
+
+    # 判断第一轮最小猜测次数为本轮猜测次数，其他轮与最小次数比较
+    if total_round == 1 or least_times > times:
+        least_times = times
+
+     #平均猜测次数为总次数/总轮数
+    avg_times = float(total_times / total_round)
+
+    print('%s,你已经玩了%d次，最好%d轮猜出答案，平均%.2f轮猜出答案' % (name, total_round,least_times, avg_times))
+    choice = input('是否继续游戏？（输入y继续，其他退出）')
+
+write_file(name, total_round, total_times, least_times)
+
+print('退出游戏，欢迎下次再来！')
